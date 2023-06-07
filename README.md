@@ -28,11 +28,12 @@ import "github.com/mixarchitecture/cache"
 package main
 
 import (
-    "fmt"
+ "context"
+ "fmt"
 
-    "github.com/mixarchitecture/i18np"
-    "github.com/mixarchitecture/cache"
-    "github.com/mixarchitecture/mredis"
+ "github.com/mixarchitecture/cache"
+ "github.com/mixarchitecture/i18np"
+ "github.com/mixarchitecture/mredis"
 )
 
 type Entity struct {
@@ -40,28 +41,42 @@ type Entity struct {
 }
 
 func main() {
-    redis := mredis.New(mredis.Config{
-        Host: "localhost",
-        Port: 6379,
-        DB:   0,
-    })
-    c := cache.New[*Entity](redis)
+ redis := mredis.New(&mredis.Config{
+  Host: "localhost",
+  Port: "6379",
+  DB:   0,
+ })
+ c := cache.New[*Entity](redis)
 
-    key := "my-cache-key"
-    cacheHandler := func() (*Entity, *i18np.Error) {
-        return &Entity{ID: "my-id"}, nil
-    }
-    res, err := c.Creator(createEntity).Handler(cacheHandler).Get(key)
-    if err != nil {
-        // handle error
-    }
-    fmt.Println(res.ID)
+ key := "my-cache-key"
+ cacheHandler := func() (*Entity, *i18np.Error) {
+  return &Entity{ID: "my-id"}, nil
+ }
+ res, err := c.Creator(createEntity).Handler(cacheHandler).Get(context.Background(), key)
+ if err != nil {
+  fmt.Println(err)
+  // handle error
+ }
+ fmt.Println(res.ID)
 }
 
 func createEntity() *Entity {
-    return &Entity{}
+ return &Entity{}
 }
 ```
+
+## Error Keys
+
+this package uses i18np to show error messages. [Click here](https://github.com/mixarchitecture/i18np) to learn how to use i18np.
+
+Here is the list of error messages to be forwarded to i18np:
+
+| Key | Description |
+| --- | --- |
+| cache_an_error_on_exist | An error occurred while checking the existence of the cache |
+| cache_an_error_on_get | An error occurred while getting the cache |
+| cache_an_error_on_set | An error occurred while setting the cache |
+| cache_not_runnable | The cache is not runnable |
 
 ## Recommended Service
 
