@@ -1,3 +1,5 @@
+# this repository has been moved into [cillop](https://github.com/cilloparch/cillop).
+
 # Mix Arch Cache Client
 
 This is a client for the cache server. It is used to store and retrieve data from the cache server.
